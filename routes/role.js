@@ -2,7 +2,7 @@ var express = require("express");
 var router = express.Router();
 const RoleModel = require("../modals/Role");
 
-const authenticateToken = require("../autheticateToken");
+const {authenticateToken, checkAdmin} = require("../autheticateToken");
 
 async function defaultRoleRun() {
   let findAdminRole = await RoleModel.find({ role_name: "admin" });
@@ -30,11 +30,11 @@ async function defaultRoleRun() {
 defaultRoleRun();
 
 /* GET roles listing. */
-router.get("/", authenticateToken, async function (req, res) {
+router.get("/", [authenticateToken, checkAdmin], async function (req, res) {
   let roles = await RoleModel.find({});
   res.send(roles);
 });
-router.get("/:id", authenticateToken, async function (req, res) {
+router.get("/:id", [authenticateToken, checkAdmin], async function (req, res) {
   let role = await RoleModel.findById(req.params.id);
   res.send({
     role_name: role.role_name,
@@ -43,7 +43,7 @@ router.get("/:id", authenticateToken, async function (req, res) {
     deletedDate: rating.deletedDate,
   });
 });
-router.post("/", async function (req, res) {
+router.post("/", [authenticateToken, checkAdmin], async function (req, res) {
   try {
     const SaveRole = new RoleModel(req.body);
     const role = await SaveRole.save();
@@ -55,13 +55,13 @@ router.post("/", async function (req, res) {
 });
 
 // Delete by id
-router.delete("/:id", async function (req, res) {
+router.delete("/:id", [authenticateToken, checkAdmin], async function (req, res) {
   const role = await RoleModel.findByIdAndDelete(req.params.id);
   res.send(role);
 });
 
 // Update by id
-router.put("/:id", async function (req, res) {
+router.put("/:id", [authenticateToken, checkAdmin], async function (req, res) {
   const role = await RoleModel.findByIdAndUpdate(req.params.id, req.body);
   res.send(role);
 });

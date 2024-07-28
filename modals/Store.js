@@ -14,6 +14,10 @@ const StoreSchema = new Schema({
         type: String,
         required: [true, "address is required"]
     },
+    createdBy: {
+        type: String,
+        required: [true, "createdBy is required"]
+    },
     createdDate: {
         type: Date,
         required: [true, "created date is required"],
